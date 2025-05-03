@@ -9,3 +9,5 @@ django-leaflet==0.28.3
 django-channels==4.0.0
 django-notifications-hq==1.8.3 
 python-decouple
+gunicorn==20.1.0
+python-dotenv
