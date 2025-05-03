@@ -163,9 +163,13 @@ def search_requests(request):
 def profile(request):
     unread_notifications_count = get_unread_notifications_count(request.user)
     if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=request.user)
+        form = ProfileForm(request.POST, instance=request.user)
         if form.is_valid():
-            form.save()
+            user = form.save(commit=False)
+            profile_picture_url = request.POST.get('profile_picture')
+            if profile_picture_url:
+                user.profile_picture = profile_picture_url
+            user.save()
             messages.success(request, 'Your profile has been updated successfully.')
             return redirect('profile')
     else:

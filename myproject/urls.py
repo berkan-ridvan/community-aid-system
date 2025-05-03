@@ -28,7 +28,4 @@ urlpatterns = [
         template_name='community/logout.html',
         http_method_names=['get', 'post']
     ), name='logout'),
-]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
