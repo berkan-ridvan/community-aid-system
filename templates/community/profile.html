@@ -1,0 +1,97 @@
+{% extends 'community/base.html' %}
+
+{% block title %}Profile - Community Help System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <div class="rounded-circle bg-secondary mb-3 mx-auto" style="width: 150px; height: 150px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-person text-white" style="font-size: 4rem;"></i>
+                    </div>
+                {% endif %}
+                
+                <h4>{{ user.username }}</h4>
+                <p class="text-muted">
+                    {% if user.is_resident %}
+                        Service Requester (Resident)
+                    {% elif user.is_service_provider %}
+                        Service Provider
+                    {% endif %}
+                </p>
+                
+                {% if user.rating %}
+                    <div class="mb-3">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= user.rating %}
+                                <i class="bi bi-star-fill text-warning"></i>
+                            {% else %}
+                                <i class="bi bi-star text-warning"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <span class="ms-2">{{ user.rating|floatformat:1 }}</span>
+                    </div>
+                {% endif %}
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'messages_list' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-envelope"></i> Messages
+                    </a>
+                    <a href="{% url 'notifications' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-bell"></i> Notifications
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Profile Information</h5>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="id_username" name="username" value="{{ user.username }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="id_email" name="email" value="{{ user.email }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_profile_picture" class="form-label">Profile Picture</label>
+                        <input type="file" class="form-control" id="id_profile_picture" name="profile_picture">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_phone_number" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="id_phone_number" name="phone_number" value="{{ user.phone_number }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="id_address" name="address" value="{{ user.address }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_bio" class="form-label">About Me</label>
+                        <textarea class="form-control" id="id_bio" name="bio" rows="3">{{ user.bio }}</textarea>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

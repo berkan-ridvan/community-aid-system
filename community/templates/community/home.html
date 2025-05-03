@@ -1,0 +1,27 @@
+{% extends 'community/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body text-center">
+                <h1>Welcome to Community Aid System</h1>
+                <p class="lead">A platform that brings together community residents and service providers</p>
+                
+                {% if not user.is_authenticated %}
+                    <div class="mt-4">
+                        <a href="{% url 'register' %}" class="btn btn-primary btn-lg me-2">Register</a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">Login</a>
+                    </div>
+                {% else %}
+                    <div class="mt-4">
+                        {% if user.is_resident %}
+                            <a href="{% url 'create_service_request' %}" class="btn btn-primary btn-lg">Create Service Request</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

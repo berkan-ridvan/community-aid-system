@@ -1,0 +1,69 @@
+{% extends 'community/base.html' %}
+
+{% block title %}Inbox - Community Help System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title mb-4">Messages</h2>
+                
+                <ul class="nav nav-tabs mb-4" id="messageTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="received-tab" data-bs-toggle="tab" data-bs-target="#received" type="button" role="tab">
+                            Received Messages
+                            {% if unread_count > 0 %}
+                                <span class="badge bg-danger">{{ unread_count }}</span>
+                            {% endif %}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="sent-tab" data-bs-toggle="tab" data-bs-target="#sent" type="button" role="tab">Sent Messages</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="messageTabsContent">
+                    <div class="tab-pane fade show active" id="received" role="tabpanel">
+                        {% if received_messages %}
+                            <div class="list-group">
+                                {% for message in received_messages %}
+                                    <a href="{% url 'message_detail' message.id %}" class="list-group-item list-group-item-action {% if not message.is_read %}list-group-item-primary{% endif %}">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{ message.subject }}</h6>
+                                            <small>{{ message.created_at|date:"d.m.Y H:i" }}</small>
+                                        </div>
+                                        <p class="mb-1">From: {{ message.sender.username }}</p>
+                                        <small class="text-muted">{{ message.content|truncatechars:100 }}</small>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No received messages.</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="tab-pane fade" id="sent" role="tabpanel">
+                        {% if sent_messages %}
+                            <div class="list-group">
+                                {% for message in sent_messages %}
+                                    <a href="{% url 'message_detail' message.id %}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{ message.subject }}</h6>
+                                            <small>{{ message.created_at|date:"d.m.Y H:i" }}</small>
+                                        </div>
+                                        <p class="mb-1">To: {{ message.receiver.username }}</p>
+                                        <small class="text-muted">{{ message.content|truncatechars:100 }}</small>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No sent messages.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

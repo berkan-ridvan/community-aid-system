@@ -1,0 +1,106 @@
+{% extends 'community/base.html' %}
+{% load community_tags %}
+
+{% block title %}Home - Community Help System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>Welcome!</h2>
+        <p class="lead">Welcome to Community Help System. This platform allows you to help your neighbors.</p>
+        
+        {% if user.is_authenticated %}
+            {% if user.is_resident %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Your Service Requests</h5>
+                        {% if service_requests %}
+                            <div class="list-group">
+                                {% for request in service_requests %}
+                                    <a href="{% url 'service_request_detail' request.pk %}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{ request.title }}</h6>
+                                            <span class="badge bg-{{ request.status|status_color }}">
+                                                {{ request.get_status_display }}
+                                            </span>
+                                        </div>
+                                        <p class="mb-1">{{ request.description|truncatechars:100 }}</p>
+                                        <small class="text-muted">{{ request.created_at|date:"d.m.Y H:i" }}</small>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">You haven't created any service requests yet.</p>
+                            <a href="{% url 'create_service_request' %}" class="btn btn-primary">Create Service Request</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% elif user.is_service_provider %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Available Service Requests</h5>
+                        {% if available_requests %}
+                            <div class="list-group">
+                                {% for request in available_requests %}
+                                    <a href="{% url 'service_request_detail' request.pk %}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{ request.title }}</h6>
+                                            <span class="badge bg-{{ request.status|status_color }}">
+                                                {{ request.get_status_display }}
+                                            </span>
+                                        </div>
+                                        <p class="mb-1">{{ request.description|truncatechars:100 }}</p>
+                                        <small class="text-muted">{{ request.created_at|date:"d.m.Y H:i" }}</small>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No available service requests at the moment.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Join the System</h5>
+                    <p class="card-text">By joining the Community Help System, you can help your neighbors.</p>
+                    <a href="{% url 'register' %}" class="btn btn-primary">Register Now</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Quick Links</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <a href="{% url 'search_requests' %}" class="text-decoration-none">
+                            <i class="bi bi-search"></i> Search Service
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="list-group-item">
+                            <a href="{% url 'messages_list' %}" class="text-decoration-none">
+                                <i class="bi bi-envelope"></i> Messages
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'notifications' %}" class="text-decoration-none">
+                                <i class="bi bi-bell"></i> Notifications
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'profile' %}" class="text-decoration-none">
+                                <i class="bi bi-person"></i> My Profile
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

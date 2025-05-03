@@ -1,0 +1,47 @@
+{% extends 'community/base.html' %}
+
+{% block title %}{{ message.subject }} - Community Help System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="card-title">{{ message.subject }}</h2>
+                    <a href="{% url 'send_message' message.sender.id %}" class="btn btn-primary">
+                        <i class="bi bi-reply"></i> Reply
+                    </a>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="mb-1"><strong>From:</strong> {{ message.sender.username }}</p>
+                            <p class="mb-1"><strong>To:</strong> {{ message.receiver.username }}</p>
+                        </div>
+                        <small class="text-muted">{{ message.created_at|date:"d.m.Y H:i" }}</small>
+                    </div>
+                </div>
+                
+                <div class="card bg-light mb-4">
+                    <div class="card-body">
+                        {{ message.content|linebreaks }}
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'inbox' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Inbox
+                    </a>
+                    {% if message.receiver == user %}
+                        <a href="{% url 'send_message' message.sender.id %}" class="btn btn-primary">
+                            <i class="bi bi-reply"></i> Reply
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

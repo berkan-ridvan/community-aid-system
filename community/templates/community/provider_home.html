@@ -1,0 +1,39 @@
+{% extends 'community/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Open Service Requests</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Service Type</th>
+                        <th>Description</th>
+                        <th>Urgency</th>
+                        <th>Created Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in service_requests %}
+                    <tr>
+                        <td>{{ request.get_service_type_display }}</td>
+                        <td>{{ request.description|truncatechars:50 }}</td>
+                        <td>{{ request.get_urgency_display }}</td>
+                        <td>{{ request.created_at|date:"d.m.Y H:i" }}</td>
+                        <td>
+                            <a href="{% url 'service_request_detail' request.pk %}" class="btn btn-sm btn-info">Details</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No open service requests at the moment.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

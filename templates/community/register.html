@@ -1,0 +1,104 @@
+{% extends 'community/base.html' %}
+
+{% block title %}Register - Community Help System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Register</h2>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="id_username" name="username" required>
+                        {% if form.username.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.username.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="id_email" name="email" required>
+                        {% if form.email.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.email.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password1" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="id_password1" name="password1" required>
+                        {% if form.password1.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.password1.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password2" class="form-label">Password Repeat</label>
+                        <input type="password" class="form-control" id="id_password2" name="password2" required>
+                        {% if form.password2.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.password2.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="id_is_resident" name="is_resident" checked>
+                            <label class="form-check-label" for="id_is_resident">
+                                Service Requester (Resident)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="id_is_service_provider" name="is_service_provider">
+                            <label class="form-check-label" for="id_is_service_provider">
+                                Service Provider
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_profile_picture" class="form-label">Profile Picture</label>
+                        <input type="file" class="form-control" id="id_profile_picture" name="profile_picture">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_phone_number" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="id_phone_number" name="phone_number">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="id_address" name="address">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_bio" class="form-label">About Me</label>
+                        <textarea class="form-control" id="id_bio" name="bio" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

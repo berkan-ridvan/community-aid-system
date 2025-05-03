@@ -1,0 +1,196 @@
+{% extends 'community/base.html' %}
+{% load static %}
+
+{% block title %}{{ service_request.title }} - Community Help System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="card-title">{{ service_request.title }}</h2>
+                    <span class="badge {% if service_request.status == 'pending' %}bg-warning{% elif service_request.status == 'in_progress' %}bg-info{% elif service_request.status == 'completed' %}bg-success{% elif service_request.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
+                        {{ service_request.get_status_display }}
+                    </span>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Service Type</h6>
+                    <p>{{ service_request.get_service_type_display }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Urgency</h6>
+                    <p class="{% if service_request.urgency == 'low' %}text-success{% elif service_request.urgency == 'medium' %}text-warning{% elif service_request.urgency == 'high' %}text-danger{% else %}text-secondary{% endif %}">
+                        {{ service_request.get_urgency_display }}
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Description</h6>
+                    <p>{{ service_request.description }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Location</h6>
+                    <p>{{ service_request.location }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Created By</h6>
+                    <div class="d-flex align-items-center">
+                        <p class="mb-0">{{ service_request.resident.username }}</p>
+                        {% if user.is_authenticated and user != service_request.resident %}
+                            <a href="{% url 'send_message' service_request.resident.pk %}" class="btn btn-sm btn-outline-primary ms-2">
+                                <i class="bi bi-envelope"></i> Send Message
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Created Date</h6>
+                    <p>{{ service_request.created_at|date:"d.m.Y H:i" }}</p>
+                </div>
+                
+                {% if user == service_request.resident and service_request.status == 'in_progress' %}
+                    <form method="post" action="{% url 'complete_service' service_request.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">Complete Service</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if service_request.status == 'completed' %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Review</h5>
+                    {% if service_request.reviews.all %}
+                        {% for review in service_request.reviews.all %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="card-subtitle mb-2 text-muted">
+                                            {{ review.reviewer.username }} by
+                                        </h6>
+                                        <div>
+                                            {% for i in "12345"|make_list %}
+                                                {% if forloop.counter <= review.rating %}
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                {% else %}
+                                                    <i class="bi bi-star text-warning"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <p class="card-text">{{ review.comment }}</p>
+                                    <small class="text-muted">{{ review.created_at|date:"d.m.Y H:i" }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No review yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+        {% if service_request.status == 'pending' and user.is_service_provider %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Make a Bid</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_amount" class="form-label">Amount</label>
+                            <input type="number" class="form-control" id="id_amount" name="amount" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_estimated_time" class="form-label">Estimated Time</label>
+                            <input type="text" class="form-control" id="id_estimated_time" name="estimated_time" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="id_notes" name="notes" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Send a Bid</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+        
+        {% if service_request.status == 'completed' and user == service_request.resident and not service_request.reviews.all %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Make a Review</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_rating" class="form-label">Rating</label>
+                            <select class="form-select" id="id_rating" name="rating" required>
+                                <option value="">Select</option>
+                                <option value="1">1 Star</option>
+                                <option value="2">2 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="5">5 Stars</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_comment" class="form-label">Comment</label>
+                            <textarea class="form-control" id="id_comment" name="comment" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Send a Review</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Bids</h5>
+                {% if bids %}
+                    <div class="list-group">
+                        {% for bid in bids %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <h6 class="mb-0">{{ bid.service_provider.username }}</h6>
+                                        {% if user.is_authenticated and user != bid.service_provider %}
+                                            <a href="{% url 'send_message' bid.service_provider.pk %}" class="btn btn-sm btn-outline-primary ms-2">
+                                                <i class="bi bi-envelope"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <span class="badge bg-{{ bid.is_accepted|yesno:'success,secondary' }}">
+                                        {{ bid.is_accepted|yesno:'Accepted,Pending' }}
+                                    </span>
+                                </div>
+                                <p class="mb-1">Amount: ${{ bid.amount }} </p>
+                                <p class="mb-1">Estimated Time: {{ bid.estimated_time }}</p>
+                                {% if bid.notes %}
+                                    <p class="mb-1">Notes: {{ bid.notes }}</p>
+                                {% endif %}
+                                <small class="text-muted">{{ bid.created_at|date:"d.m.Y H:i" }}</small>
+                                
+                                {% if user == service_request.resident and service_request.status == 'pending' and not bid.is_accepted %}
+                                    <form method="post" action="{% url 'accept_bid' bid.pk %}" class="mt-2">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success btn-sm">Accept Bid</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No bid yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

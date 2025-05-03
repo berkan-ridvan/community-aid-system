@@ -1,0 +1,29 @@
+{% extends 'community/base.html' %}
+
+{% block title %}Send Message - Community Help System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Send Message to {{ recipient.username }}</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_subject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="id_subject" name="subject" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_content" class="form-label">Message</label>
+                        <textarea class="form-control" id="id_content" name="content" rows="5" required></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
